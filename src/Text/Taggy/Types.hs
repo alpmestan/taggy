@@ -56,7 +56,7 @@ isTagStyle (TagStyle _ _ _) = True
 isTagStyle _          = False
 
 tagsNamed :: Text -> [Tag] -> [Tag]
-tagsNamed n = filter (named n)
+tagsNamed nam = filter (named nam)
   
   where named n (TagOpen t _ _) = toCaseFold n == toCaseFold t
         named _ _               = False

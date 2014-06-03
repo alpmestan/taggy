@@ -3,9 +3,9 @@
 module Text.Taggy.DOM where
 
 import Data.Text (Text)
-import qualified Data.Text as T
 import Text.Taggy.Types
 
+-- TODO: provide lenses for this
 data Tree = Branch !Text [Attribute] [Tree]
           | Leaf !Tag
   deriving (Eq, Show)
@@ -13,7 +13,6 @@ data Tree = Branch !Text [Attribute] [Tree]
 domify :: [Tag] -> [Tree]
 domify [] = []
 domify xs = go xs
-
 
   where go [] = []
         go ts = a ++ map Leaf (take 1 b) ++ go (drop 1 b)
@@ -26,22 +25,22 @@ domify xs = go xs
           f $ [tago, TagText sty, tagc] ++ rest
 
 
-        f (TagOpen name attrs autocl : rest) =
+        f (TagOpen name as autocl : rest) =
           case f rest of 
-            (inner, []) -> ( Leaf (TagOpen name attrs autocl) : inner
+            (inner, []) -> ( Leaf (TagOpen name as autocl) : inner
                            , []
                            )
             (inner, TagClose x : ts)
               | x == name -> 
                 let (a, b) = f ts in 
-                  (Branch name attrs inner : a, b)
+                  (Branch name as inner : a, b)
               | otherwise -> 
-                ( Leaf (TagOpen name attrs autocl) : inner
+                ( Leaf (TagOpen name as autocl) : inner
                 , TagClose x : ts
                 )
             _ -> error "Text.Taggy.DOM.domify: shouldn't happen"
 
-        f (TagClose x:xs) = ([], TagClose x : xs)
-        f (x:xs) = (Leaf x : a, b)
-          where (a,b) = f xs
+        f (TagClose x:ts) = ([], TagClose x : ts)
+        f (x:ts) = (Leaf x : a, b)
+          where (a,b) = f ts
         f [] = ([], [])

@@ -46,9 +46,9 @@ delimitedByTag :: T.Text -> Parser (Tag, T.Text, Tag)
 delimitedByTag t = do
   char '<'
   string t
-  (attrs, _) <- attributes
+  (as, _) <- attributes
   inside <- matchUntil $ "</" <> t <> ">"
-  return (TagOpen t attrs False, inside, TagClose t)
+  return (TagOpen t as False, inside, TagClose t)
 
 tagcomment :: Parser Tag
 tagcomment = do
@@ -78,8 +78,8 @@ tagopen = do
   possibly '!'
   skipSpace
   i <- ident
-  (attrs, autoclose) <- attributes
-  return $ TagOpen i attrs autoclose
+  (as, autoclose) <- attributes
+  return $ TagOpen i as autoclose
 
 tagclose :: Parser Tag
 tagclose = do
