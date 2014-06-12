@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 -- |
 -- Module       : Text.Taggy.Types
 -- Copyright    : (c) 2014 Alp Mestanogullari
@@ -30,6 +31,14 @@ data Tag = TagOpen !Text [Attribute] !Bool -- is it a self-closing tag?
          | TagScript !Tag !Text !Tag
          | TagStyle !Tag !Text !Tag
   deriving (Show, Eq)
+
+tname :: Tag -> Text
+tname (TagOpen n _ _) = n
+tname (TagClose n) = n
+tname (TagText _) = ""
+tname (TagComment _) = "<!-- -->"
+tname (TagScript _ _ _) = "script"
+tname (TagStyle _ _ _) = "style"
 
 isTagOpen :: Tag -> Bool
 isTagOpen (TagOpen _ _ _) = True

@@ -144,7 +144,11 @@ html = go
                     (t:) `fmap` go
 
 tag :: Parser Tag
-tag = tagcomment
+tag = skipSpace >> tag'
+
+tag' :: Parser Tag
+tag' = 
+      tagcomment
   <|> tagscript
   <|> tagstyle
   <|> tagopen
