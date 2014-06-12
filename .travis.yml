@@ -1,7 +1,7 @@
 language: haskell
 
 script:
-  - cabal install --only-dependencies && cabal configure && cabal build && cabal bench
+  - cabal configure --enable-benchmarks && cabal build && cabal bench
 
 before_install:
   - cabal update
