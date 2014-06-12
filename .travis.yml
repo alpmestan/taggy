@@ -7,7 +7,7 @@ before_install:
   - cabal update
 
 install:
-  - cabal install --only-dependencies
+  - cabal install --only-dependencies --enable-benchmarks
   
 notifications:
   email:
