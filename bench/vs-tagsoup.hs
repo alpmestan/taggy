@@ -18,8 +18,9 @@ sizes' = [50000, 500000, 5000000]
 benchOnFile :: String -> FilePath -> Benchmark
 benchOnFile label fp =
   bgroup label
-    [ bench "tagsoup" $ whnfIO (tagsoup fp) 
-    , bench "taggy"   $ whnfIO (taggy   fp)
+    [ bench "tagsoup"        $ whnfIO (tagsoup fp) 
+    , bench "taggy"          $ whnfIO (taggy   fp)
+    , bench "taggy-entities" $ whnfIO (taggyEntities fp)
     ]
 
 tagsoup :: FilePath -> IO (V.Vector (Tagsoup.Tag T.Text))
@@ -28,7 +29,11 @@ tagsoup fp = T.readFile ("html_files/" ++ fp)
 
 taggy :: FilePath -> IO (V.Vector Taggy.Tag)
 taggy fp = T.readFile ("html_files/" ++ fp) 
-       >>= return . V.fromList . Taggy.tagsIn
+       >>= return . V.fromList . Taggy.taggyWith False
+
+taggyEntities :: FilePath -> IO (V.Vector Taggy.Tag)
+taggyEntities fp = T.readFile ("html_files/" ++ fp)
+               >>= return . V.fromList . Taggy.taggyWith True
 
 linkBench :: Int -> Benchmark
 linkBench size = benchOnFile (show size) fp
@@ -56,5 +61,5 @@ main =
     , benchOnFile "/r/haskell"
                   "haskell_reddit.html"
 
-    , bgroup "links" $ map linkBench sizes
+    -- , bgroup "links" $ map linkBench sizes
     ]

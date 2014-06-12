@@ -30,9 +30,9 @@ taggy fp = do
   content <- T.readFile fp
   either (\s -> putStrLn $ "couldn't parse: " ++ s) 
          (mapM_ print) 
-         (eitherResult $ run content)
+         (eitherResult $ run True content)
 
 dom :: FilePath -> IO ()
 dom fp = do
   content <- T.readFile fp
-  mapM_ print . domify $ tagsIn content
+  mapM_ print . domify $ taggyWith True content
