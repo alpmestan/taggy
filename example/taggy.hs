@@ -36,4 +36,4 @@ taggy fp = do
 dom :: FilePath -> IO ()
 dom fp = do
   content <- T.readFile fp
-  mapM_ print . g' $ tagsIn content
+  mapM_ print . domify $ tagsIn content
