@@ -1,7 +1,7 @@
 language: haskell
 
 script:
-  - cabal configure --enable-benchmarks && cabal build
+  - cabal configure && cabal build
 
 before_install:
   - cabal update
