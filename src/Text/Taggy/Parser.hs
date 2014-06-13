@@ -71,11 +71,28 @@ possibly c =  (char c *> return ())
           <|> return ()
 
 ident :: Parser T.Text
-ident = takeWhile1 (\c -> isAlphaNum c || c == '-' || c == '_' || c == ':')
+ident = 
+  takeWhile1 (\c -> isAlphaNum c 
+                 || c == '-' 
+                 || c == '_' 
+                 || c == ':'
+             )
+
+attribute_ident :: Parser T.Text
+attribute_ident = 
+  takeWhile1 (\c -> isAlphaNum c 
+                 || c == '-' 
+                 || c == '_' 
+                 || c == ':'
+                 || c == '('
+                 || c == ')'
+                 || c == ','
+             )
 
 tagopen :: Bool -> Parser Tag
 tagopen cventities = do
   char '<'
+  possibly '<'
   possibly '!'
   skipSpace
   i <- ident
@@ -84,7 +101,8 @@ tagopen cventities = do
 
 tagclose :: Parser Tag
 tagclose = do
-  "</"
+  char '<'
+  char '/'
   skipSpace
   i <- ident
   char '>'
@@ -113,9 +131,11 @@ attributes cventities = postProcess `fmap` go emptyL
 attribute :: Bool -> Parser Attribute
 attribute cventities = do
   skipSpace
-  key <- quoted <|> ident
+  key <- quoted <|> attribute_ident
   value <- option "" $ fmap (if cventities then convertEntities else id) $ do 
+    possibly ' '
     "="
+    possibly ' '
     quoted <|> singlequoted <|> unquoted
   return $ Attribute key value
 
@@ -133,47 +153,34 @@ attribute cventities = do
 
         unquoted = Atto.takeTill (\c -> isSpace c || c == '>')
 
-htmlWith :: Parser Tag -> Parser [Tag]
-htmlWith tp = go
+htmlWith :: Bool -> Parser [Tag]
+htmlWith cventities = go
 
   where go = do
           finished <- atEnd
           if finished
             then return []
-            else do t <- tp
+            else do t <- tag cventities
                     (t:) `fmap` go
 
-tag :: Parser Tag -> Parser Tag
-tag p = skipSpace >> p
+tag :: Bool -> Parser Tag
+tag cventities = skipSpace >> tag' cventities
 
-tag' :: Parser Tag
-tag' = 
+tag' :: Bool -> Parser Tag
+tag' b =
       tagcomment
-  <|> tagscript False
-  <|> tagstyle False
-  <|> tagopen False
+  <|> tagscript b
+  <|> tagstyle b
+  <|> tagopen b
   <|> tagclose
-  <|> tagtext False
+  <|> tagtext b
 
-tag'2 :: Parser Tag
-tag'2 = 
-      tagcomment
-  <|> tagscript True
-  <|> tagstyle True
-  <|> tagopen True
-  <|> tagclose
-  <|> tagtext True
-
--- | Do we convert html entities to unicode ?
-tagparser :: Bool -> Parser Tag
-tagparser True = tag tag'2
-tagparser False = tag tag'
-
+-- | Do we want to convert html entities to their unicode chars
 taggyWith :: Bool -> LT.Text -> [Tag]
 taggyWith cventities =
     either (const []) id
   . AttoLT.eitherResult
-  . AttoLT.parse (htmlWith $ tagparser cventities)
+  . AttoLT.parse (htmlWith cventities)
                 
 run :: Bool -> LT.Text -> AttoLT.Result [Tag]
-run cventities = AttoLT.parse (htmlWith $ tagparser cventities)
+run cventities = AttoLT.parse (htmlWith cventities)
