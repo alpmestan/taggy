@@ -123,8 +123,14 @@ attributes cventities = postProcess `fmap` go emptyL
 
     tagends = skipSpace >> parseEnd
 
-    parseEnd = ("/>" *> return True)
+    parseEnd = autoClosing
            <|> (">" *> return False)
+
+    autoClosing = do
+      char '/'
+      skipSpace
+      char '>'
+      return True
 
     postProcess (l, b) = (toList l, b)
 
