@@ -10,16 +10,18 @@ The performance is quite promising for now, but we don't do a lof of things that
 Using `taggy`
 =============
 
-_taggy_ has a `linksIn` function to work on HTML à la _tagsoup_.
+_taggy_ has a `taggyWith` function to work on HTML à la _tagsoup_.
 
 ``` haskell
-tagsIn :: LT.Text -> [Tag]
+taggyWith :: Bool -> LT.Text -> [Tag]
 ```
+
+The `Bool` there just lets you specify whether you want to convert the special HTML entities to their corresponding unicode character. `True` means "yes convert them please".
 
 Or you can use the raw `run` function, which returns a good old `Result` from _attoparsec_.
 
 ``` haskell
-run :: LT.Text -> AttoLT.Result [Tag]
+run :: Bool -> LT.Text -> AttoLT.Result [Tag]
 ```
 
 For example, if you want to read the html code from a file, and print one tag per line, you could do:
@@ -34,7 +36,7 @@ taggy fp = do
   content <- T.readFile fp
   either (\s -> putStrLn $ "couldn't parse: " ++ s) 
          (mapM_ print) 
-         (eitherResult $ run content)
+         (eitherResult $ run True content)
 ```
 
 But _taggy_ also started providing support for DOM-syle documents. This is computed from the list of tags gained by using `tagsIn`.
