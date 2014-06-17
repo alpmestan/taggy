@@ -3,9 +3,7 @@ taggy
 
 An attoparsec based html parser. 
 
-Currently very WIP but already supports a fairly decent range of common websites. I haven't managed to find a website with which it chokes, using the current parser.
-
-The performance is quite promising for now, but we don't do a lof of things that tagsoup does, like converting `&amp;` to `&`, etc.
+Currently very WIP but already supports a fairly decent range of common websites. I haven't managed to find a website with which it chokes, using the current parser. The performance is quite promising.
 
 Using `taggy`
 =============
@@ -16,7 +14,7 @@ _taggy_ has a `taggyWith` function to work on HTML à la _tagsoup_.
 taggyWith :: Bool -> LT.Text -> [Tag]
 ```
 
-The `Bool` there just lets you specify whether you want to convert the special HTML entities to their corresponding unicode character. `True` means "yes convert them please".
+The `Bool` there just lets you specify whether you want to convert the special HTML entities to their corresponding unicode character. `True` means "yes convert them please". This function takes lazy `Text` as input.
 
 Or you can use the raw `run` function, which returns a good old `Result` from _attoparsec_.
 
@@ -39,7 +37,7 @@ taggy fp = do
          (eitherResult $ run True content)
 ```
 
-But _taggy_ also started providing support for DOM-syle documents. This is computed from the list of tags gained by using `tagsIn`.
+But _taggy_ also started providing support for DOM-syle documents. This is computed from the list of tags gained by using `taggyWith`.
 
 If you fire up ghci with _taggy_ loaded:
 
