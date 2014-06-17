@@ -1,7 +1,7 @@
 taggy
 =====
 
-An attoparsec based html parser. 
+An attoparsec based html parser. [![Build Status](https://secure.travis-ci.org/alpmestan/taggy.png?branch=master)](http://travis-ci.org/alpmestan/taggy)
 
 Currently very WIP but already supports a fairly decent range of common websites. I haven't managed to find a website with which it chokes, using the current parser. The performance is quite promising.
 
