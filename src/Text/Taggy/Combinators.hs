@@ -1,4 +1,4 @@
-module Text.Taggy.Combinators (hasAttr, getAttr, innerText) where
+module Text.Taggy.Combinators (hasAttr, getAttr, innerText, (//)) where
 
 import Prelude hiding (lookup)
 import Data.Monoid (mconcat)
@@ -16,3 +16,9 @@ innerText :: Element -> Text
 innerText = mconcat . map decons . eltChildren
   where decons (NodeElement e) = innerText e
         decons (NodeContent x) = x
+
+(//) :: Element -> (Element -> Bool) -> [Element]
+(//) = flip filter . expand
+  where expand = concat . map decons . eltChildren
+        decons (NodeElement e) = e : expand e
+        decons _ = []
