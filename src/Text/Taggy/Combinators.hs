@@ -1,4 +1,4 @@
-{-# LANGUAGE LambdaCase, ViewPatterns #-}
+{-# LANGUAGE LambdaCase #-}
 
 module Text.Taggy.Combinators (hasName, hasAttr, getAttr, innerText, (//), (/&), subtrees) where
 
@@ -27,7 +27,7 @@ innerText = mconcat . map getContent . eltChildren
 
 (/&) :: Element -> [(Element -> Bool)] -> [Element]
 (/&) element [] = [element]
-(/&) element (x:xs) = (=<<) (/& xs) . filter x . catElements $ eltChildren element
+(/&) element (x:xs) = (/& xs) <=< filter x . catElements $ eltChildren element
 
 subtrees :: Element -> [Element]
 subtrees = ap (:) subtrees <=< catElements . eltChildren
