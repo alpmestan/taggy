@@ -15,6 +15,7 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:     Text.Taggy,
+                       Text.Taggy.Combinators,
                        Text.Taggy.DOM,
                        Text.Taggy.Entities,
                        Text.Taggy.Parser,
