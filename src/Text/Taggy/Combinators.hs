@@ -1,7 +1,10 @@
-module Text.Taggy.Combinators (hasName, hasAttr, getAttr, innerText, (//), (/&)) where
+{-# LANGUAGE LambdaCase, ViewPatterns #-}
+
+module Text.Taggy.Combinators (hasName, hasAttr, getAttr, innerText, (//), (/&), subtrees) where
 
 import Prelude hiding (lookup)
 import Data.Monoid (mconcat)
+import Control.Monad (ap, (<=<))
 import Data.Text (Text)
 import Text.Taggy.DOM (Element(..), Node(..), AttrName, AttrValue)
 import Data.HashMap.Strict (lookup, keys)
@@ -16,19 +19,25 @@ getAttr :: Element -> AttrName -> Maybe AttrValue
 getAttr = flip lookup . eltAttrs
 
 innerText :: Element -> Text
-innerText = mconcat . map decons . eltChildren
-  where decons (NodeElement e) = innerText e
-        decons (NodeContent x) = x
+innerText = mconcat . map getContent . eltChildren
+  where getContent = \case { NodeElement e -> innerText e; NodeContent x -> x }
 
 (//) :: Element -> (Element -> Bool) -> [Element]
-(//) = flip filter . expand
-  where expand = concat . map decons . eltChildren
-        decons (NodeElement e) = e : expand e
-        decons _ = []
+(//) = flip filter . subtrees
 
 (/&) :: Element -> [(Element -> Bool)] -> [Element]
 (/&) element [] = [element]
-(/&) element (x:xs) = concat . map (/& xs) . filter x . immediateChildren $ eltChildren element
-  where immediateChildren = map (\(NodeElement e) -> e) . filter isElement
-        isElement (NodeElement _) = True
-        isElement _ = False
+(/&) element (x:xs) = (=<<) (/& xs) . filter x . catElements $ eltChildren element
+
+subtrees :: Element -> [Element]
+subtrees = ap (:) subtrees <=< catElements . eltChildren
+
+isElement :: Node -> Bool
+isElement = \case { NodeElement _ -> True; _ -> False }
+
+unsafeFromElement :: Node -> Element
+unsafeFromElement (NodeElement e) = e
+unsafeFromElement _ = error "unsafeFromElement isn't well-defined, use with caution. ;-)"
+
+catElements :: [Node] -> [Element]
+catElements = map unsafeFromElement . filter isElement
