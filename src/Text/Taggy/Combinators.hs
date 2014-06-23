@@ -1,10 +1,13 @@
-module Text.Taggy.Combinators (hasAttr, getAttr, innerText, (//)) where
+module Text.Taggy.Combinators (hasName, hasAttr, getAttr, innerText, (//), (/&)) where
 
 import Prelude hiding (lookup)
 import Data.Monoid (mconcat)
 import Data.Text (Text)
 import Text.Taggy.DOM (Element(..), Node(..), AttrName, AttrValue)
 import Data.HashMap.Strict (lookup, keys)
+
+hasName :: Element -> Text -> Bool
+hasName = (==) . eltName
 
 hasAttr :: Element -> AttrName -> Bool
 hasAttr = flip elem . keys . eltAttrs
@@ -22,3 +25,10 @@ innerText = mconcat . map decons . eltChildren
   where expand = concat . map decons . eltChildren
         decons (NodeElement e) = e : expand e
         decons _ = []
+
+(/&) :: Element -> [(Element -> Bool)] -> [Element]
+(/&) element [] = [element]
+(/&) element (x:xs) = concat . map (/& xs) . filter x . immediateChildren $ eltChildren element
+  where immediateChildren = map (\(NodeElement e) -> e) . filter isElement
+        isElement (NodeElement _) = True
+        isElement _ = False
