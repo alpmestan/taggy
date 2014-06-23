@@ -2,15 +2,13 @@
 
 module Text.Taggy.ParserSpec where
 
-import Control.Monad
 import Data.Attoparsec.Text.Lazy
 import Data.Text.Lazy
 import Test.Hspec
+import Test.Hspec.Attoparsec (shouldParse)
+import qualified Test.Hspec.Attoparsec.Source (Source((~>)))
 import Text.Taggy.Parser
 import Text.Taggy.Types
-
-main :: IO ()
-main = hspec spec
 
 spec :: Spec
 spec = do
@@ -100,18 +98,4 @@ spec = do
                       ]
 
 (~>) :: Text -> Parser a -> Either String a
-t ~> p = eitherResult $ parse p t
-
-shouldParse :: (Eq a, Show a) => Either String a -> a -> Expectation
-res `shouldParse` expectedVal =
-  either (expectationFailure . errmsg)
-         checkEquality
-         res
-
-  where errmsg err = "  expected: " ++ show expectedVal
-                  ++ "\n  but parse failed with error: " ++ err
-
-        checkEquality parsedVal =
-          when (parsedVal /= expectedVal) $
-            expectationFailure $ "  expected: " ++ show expectedVal
-                              ++ "\n  but got: " ++ show parsedVal
+(~>) = (Test.Hspec.Attoparsec.Source.~>)
