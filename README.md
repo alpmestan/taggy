@@ -49,7 +49,7 @@ You can see this `domify` in action.
 
 ``` haskell
 λ> :set -XOverloadedStrings
-λ> head . domify . tagsIn $ "<html><head></head><body>yo</body></html>"
+λ> head . domify . taggyWith False $ "<html><head></head><body>yo</body></html>"
 NodeElement (Element {eltName = "html", eltAttrs = fromList [], eltChildren = [NodeElement (Element {eltName = "head", eltAttrs = fromList [], eltChildren = []}),NodeElement (Element {eltName = "body", eltAttrs = fromList [], eltChildren = [NodeContent "yo"]})]})
 ```
 
