@@ -6,6 +6,7 @@ import Data.Attoparsec.Text.Lazy
 import Data.Text.Lazy
 import Test.Hspec
 import Test.Hspec.Attoparsec (shouldParse)
+import qualified Test.Hspec.Attoparsec.Source (Source((~>)))
 import Text.Taggy.Parser
 import Text.Taggy.Types
 
@@ -100,4 +101,4 @@ spec = do
                       ]
 
 (~>) :: Text -> Parser a -> Either String a
-t ~> p = eitherResult $ parse p t
+(~>) = (Test.Hspec.Attoparsec.Source.~>)
