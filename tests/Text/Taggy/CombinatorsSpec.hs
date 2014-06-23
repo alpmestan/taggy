@@ -4,12 +4,12 @@ module Text.Taggy.CombinatorsSpec where
 
 import Text.Taggy.Combinators
 import Test.Hspec
-import Text.Taggy.DOM
-import Data.HashMap.Strict
+import Text.Taggy
 
 spec :: Spec
 spec = do
-  let element = Element "html" (fromList [("xmlns", "http://www.w3.org/1999/xhtml")]) []
+  let element = (\(NodeElement e) -> e) . head . domify . taggyWith False $
+        "<html xmlns=\"http://www.w3.org/1999/xhtml\">foo<bar>baz</bar></html>"
   describe "hasAttr" $ do
     it "Tests whether an attribute is present." $ do
       (element `hasAttr` "xmlns") `shouldBe` True
@@ -19,3 +19,6 @@ spec = do
       (element `getAttr` "xmlns") `shouldBe` Just "http://www.w3.org/1999/xhtml"
     it "Nothing's missing attributes." $ 
       (element `getAttr` "style") `shouldBe` Nothing
+  describe "innerText" $ do
+    it "Should concatenate the NodeContent of the target element and all its children." $ 
+      innerText element `shouldBe` "foobaz"
