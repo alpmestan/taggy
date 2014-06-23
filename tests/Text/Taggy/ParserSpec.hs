@@ -10,9 +10,6 @@ import qualified Test.Hspec.Attoparsec.Source (Source((~>)))
 import Text.Taggy.Parser
 import Text.Taggy.Types
 
-main :: IO ()
-main = hspec spec
-
 spec :: Spec
 spec = do
   describe "tagopen parser" $ do
