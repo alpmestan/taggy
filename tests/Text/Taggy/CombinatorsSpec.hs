@@ -37,6 +37,9 @@ spec = do
       element /& [] `shouldBe` [element]
       element /& [const False] `shouldBe` []
       element /& [flip hasAttr "class", flip hasName "quux"] `shouldBe` [Element "quux" mempty mempty]
+  describe "trees" $ do
+    it "Extracts all subtrees of its target, including the target (parent node)." $ do
+      trees element `shouldBe` element:subtrees element
   describe "subtrees" $ do
-    it "Extracts all subtrees of it's target." $ do
+    it "Extracts all subtrees of its target, excluding the target (parent node)." $ do
       length (subtrees element) `shouldBe` 3
