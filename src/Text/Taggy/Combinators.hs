@@ -23,7 +23,7 @@ innerText = mconcat . map getContent . eltChildren
   where getContent = \case { NodeElement e -> innerText e; NodeContent x -> x }
 
 (//) :: Element -> (Element -> Bool) -> [Element]
-(//) = flip filter . subtrees
+(//) = flip filter . trees
 
 (/&) :: Element -> [(Element -> Bool)] -> [Element]
 (/&) element [] = [element]
