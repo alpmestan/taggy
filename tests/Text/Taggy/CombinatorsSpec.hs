@@ -37,6 +37,10 @@ spec = do
       element /& [] `shouldBe` [element]
       element /& [const False] `shouldBe` []
       element /& [flip hasAttr "class", flip hasName "quux"] `shouldBe` [Element "quux" mempty mempty]
+  describe "(/*)" $ do
+    it "Should describe all subtrees (including the target) matching a given predicate." $ do
+      element /* [] `shouldBe` element : subtrees element
+      element /* [flip hasAttr "class", flip hasName "quux"] `shouldBe` [Element "quux" mempty mempty]
   describe "trees" $ do
     it "Extracts all subtrees of its target, including the target (parent node)." $ do
       trees element `shouldBe` element:subtrees element

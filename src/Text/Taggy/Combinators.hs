@@ -1,6 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 
-module Text.Taggy.Combinators (hasName, hasAttr, getAttr, innerText, (//), (/&), trees, subtrees) where
+module Text.Taggy.Combinators (hasName, hasAttr, getAttr, innerText, (//), (/&), (/*), trees, subtrees) where
 
 import Prelude hiding (lookup)
 import Data.Monoid (mconcat)
@@ -28,6 +28,9 @@ innerText = mconcat . map getContent . eltChildren
 (/&) :: Element -> [(Element -> Bool)] -> [Element]
 (/&) element [] = [element]
 (/&) element (x:xs) = (/& xs) <=< filter x . catElements $ eltChildren element
+
+(/*) :: Element -> [(Element -> Bool)] -> [Element]
+(/*) element selector = concat . filter (not.null) . map (/& selector) $ trees element
 
 trees :: Element -> [Element]
 trees = ap (:) subtrees
