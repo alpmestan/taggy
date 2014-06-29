@@ -15,3 +15,10 @@ spec = do
       render node `shouldBe` doc
     it "Should render a given element." $ do
       render elmt `shouldBe` doc
+  describe "renderWith" $ do
+    let document = "<span>I &hearts; you!</span>"
+        element  = (\(NodeElement e) -> e) . head . domify $ taggyWith False document
+    it "Should escape HTML entities when the first argument is True." $ do
+      renderWith True element `shouldBe` "<span>I &amp;hearts; you!</span>"
+    it "Shouldn't escape HTML entities when the first argument is False." $ do
+      renderWith False element `shouldBe` document

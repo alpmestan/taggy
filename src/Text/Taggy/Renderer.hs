@@ -15,28 +15,34 @@ import Text.Taggy.DOM (Element(..), Node(..))
 import qualified Data.Text.Lazy as Lazy (Text)
 import Text.Blaze.Internal (ChoiceString(..), StaticString(..), MarkupM(..))
 
+-- renderMarkup does entity conversion implicitly, and an override at the
+-- constructor level is needed to control this; `PreEscaped (Text s)` is not
+-- escaped, but a naked `Text s` is. 
+
 class AsMarkup a where
-  toMarkup :: a -> Markup
+  -- If the first parameter is true, we align the constructors for entity
+  -- conversion.
+  toMarkup :: Bool -> a -> Markup
 
 instance AsMarkup Node where
-  toMarkup = \case
-    NodeContent text -> Content $ Text text
-    NodeElement elmt -> toMarkup elmt
+  toMarkup convertEntities = \case
+    NodeContent text -> Content $ if convertEntities then Text text else PreEscaped (Text text)
+    NodeElement elmt -> toMarkup convertEntities elmt
 
 instance AsMarkup Element where
-  toMarkup Element{..} = eltAttrs `toAttribute` Parent tag begin end kids
+  toMarkup convertEntities Element{..} = eltAttrs `toAttribute` Parent tag begin end kids
     where tag   = toStatic eltName
           begin = toStatic $ "<" <> eltName
           end   = toStatic $ "</" <> eltName <> ">"
-          kids  = foldMap toMarkup eltChildren
+          kids  = foldMap (toMarkup convertEntities) eltChildren
 
 class Renderable a where
   render :: a -> Lazy.Text
+  render = renderWith True
+  renderWith :: Bool -> a -> Lazy.Text
 
 instance AsMarkup a => Renderable a where
-  render = renderMarkup . toMarkup
-
-------------------------------------------------------------------------
+  renderWith = fmap renderMarkup . toMarkup
 
 toAttribute :: HashMap Text Text -> (Markup -> Markup)
 toAttribute = flip $ foldlWithKey' toAttribute'
