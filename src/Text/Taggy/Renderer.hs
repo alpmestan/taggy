@@ -26,8 +26,8 @@ import Text.Blaze.Internal (ChoiceString(..), StaticString(..), MarkupM(..))
 -- escaped, but a naked `Text s` is. 
 
 class AsMarkup a where
-  -- If the first parameter is true, we align the constructors for entity
-  -- conversion.
+  -- | If the first parameter is true, we align the constructors for entity
+  --   conversion.
   toMarkup :: Bool -> a -> Markup
 
 -- | A 'Node' is convertible to 'Markup'
@@ -48,6 +48,9 @@ class Renderable a where
   render :: a -> Lazy.Text
   render = renderWith True
   renderWith :: Bool -> a -> Lazy.Text
+
+-- | Any value convertible to 'Markup' can be rendered as HTML, by way of
+-- 'render' and 'renderWith'.
 
 instance AsMarkup a => Renderable a where
   renderWith = fmap renderMarkup . toMarkup
