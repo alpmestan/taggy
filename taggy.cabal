@@ -55,12 +55,12 @@ library
                        Text.Taggy.Types
   other-modules:   
   build-depends:       base >=4.5 && <5,
-                       blaze-html,
-                       blaze-markup,
-                       text >=1 && <1.2,
-                       attoparsec >=0.11 && <0.13,
+                       blaze-html >= 0.7,
+                       blaze-markup >= 0.6,
+                       text >= 1,
+                       attoparsec >=0.11,
                        vector >=0.7,
-                       unordered-containers >= 0.2 && <0.3
+                       unordered-containers >= 0.2
   hs-source-dirs:      src
   default-language:    Haskell2010
   ghc-options:         -Wall -O2 -fno-warn-unused-do-bind -funbox-strict-fields
@@ -70,7 +70,7 @@ executable taggy
   main-is:             taggy.hs
   hs-source-dirs:      example
   build-depends:       base >=4.5 && <5,
-                       text,
+                       text >= 1,
                        attoparsec >=0.12,
                        taggy
   ghc-options:         -Wall -O2 -fno-warn-unused-do-bind
@@ -85,7 +85,7 @@ benchmark taggytagsoup
   build-depends:     base >= 4 && < 5,
                      text >=1,
                      attoparsec >=0.12,
-                     taggy,
+                     taggy >= 0.1,
                      tagsoup,
                      criterion,
                      vector
