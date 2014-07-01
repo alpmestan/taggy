@@ -53,4 +53,21 @@ You can see this `domify` in action.
 NodeElement (Element {eltName = "html", eltAttrs = fromList [], eltChildren = [NodeElement (Element {eltName = "head", eltAttrs = fromList [], eltChildren = []}),NodeElement (Element {eltName = "body", eltAttrs = fromList [], eltChildren = [NodeContent "yo"]})]})
 ```
 
-I'm already working on a companion `taggy-lens` library.
+Note that the `Text.Taggy.DOM` module contains a function
+that composes `domify` and `taggyWith` for you: `parseDOM`.
+
+Lenses for taggy
+================
+
+We (well, mostly Vikram Virma to be honest) have
+put up a companion [taggy-lens](http://github.com/alpmestan/taggy-lens)
+library.
+
+Haddocks
+========
+
+I try to keep an up-to-date copy of the docs on my server:
+
+- [taggy](http://alpmestan.com/taggy/)
+- [taggy-lens](http://alpmestan.com/taggy-lens/)
+
