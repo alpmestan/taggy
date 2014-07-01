@@ -11,6 +11,14 @@
 module Text.Taggy.Parser
   ( taggyWith
   , run
+  , -- * Internal parsers
+    tagopen
+  , tagclose
+  , tagcomment
+  , tagstyle
+  , tagscript
+  , tagtext
+  , htmlWith
   ) where 
 
 import Control.Applicative
