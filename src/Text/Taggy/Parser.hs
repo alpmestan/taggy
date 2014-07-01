@@ -193,12 +193,19 @@ tag' b =
   <|> tagclose
   <|> tagtext b
 
--- | Do we want to convert html entities to their unicode chars
+-- | Get a list of tags from an HTML document
+--   represented as a 'LT.Text' value.
+--
+--   The 'Bool' lets you specify whether you want
+--   to convert HTML entities to their corresponding
+--   unicode character. ('True' means "yes convert")
 taggyWith :: Bool -> LT.Text -> [Tag]
 taggyWith cventities =
     either (const []) id
   . AttoLT.eitherResult
   . AttoLT.parse (htmlWith cventities)
-                
+
+-- | Same as 'taggyWith' but hands you back a
+--   'AttoLT.Result' from @attoparsec@
 run :: Bool -> LT.Text -> AttoLT.Result [Tag]
 run cventities = AttoLT.parse (htmlWith cventities)
