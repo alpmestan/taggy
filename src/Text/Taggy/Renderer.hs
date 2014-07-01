@@ -1,8 +1,14 @@
 {-# LANGUAGE LambdaCase, RecordWildCards, FlexibleInstances, UndecidableInstances, OverloadedStrings #-}
-
-module Text.Taggy.Renderer (
-  Renderable(..)
-) where
+-- |
+-- Module       : Text.Taggy.Renderer
+-- Copyright    : (c) 2014 Alp Mestanogullari, Vikram Verma
+-- License      : BSD3
+-- Maintainer   : alpmestan@gmail.com
+-- Stability    : experimental
+-- 
+-- Render a DOM tree (from "Text.Taggy.DOM")
+-- using the excellent blaze markup rendering library.
+module Text.Taggy.Renderer where
 
 import Data.Foldable (Foldable(foldMap))
 import Data.HashMap.Strict (HashMap, foldlWithKey')
@@ -24,11 +30,13 @@ class AsMarkup a where
   -- conversion.
   toMarkup :: Bool -> a -> Markup
 
+-- | A 'Node' is convertible to 'Markup'
 instance AsMarkup Node where
   toMarkup convertEntities = \case
     NodeContent text -> Content $ if convertEntities then Text text else PreEscaped (Text text)
     NodeElement elmt -> toMarkup convertEntities elmt
 
+-- | An 'Element' is convertible to 'Markup'
 instance AsMarkup Element where
   toMarkup convertEntities Element{..} = eltAttrs `toAttribute` Parent tag begin end kids
     where tag   = toStatic eltName

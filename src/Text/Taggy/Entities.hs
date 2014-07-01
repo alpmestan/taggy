@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Text.Taggy.Entities where
+module Text.Taggy.Entities
+  (convertEntities) where
 
 import Control.Applicative
 import Control.Monad
@@ -9,6 +10,9 @@ import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
 import qualified Data.Attoparsec.Text as Atto
 
+-- | Convert all the (currently supported)
+--   HTML entities to their corresponding
+--   unicode characters.
 convertEntities :: T.Text -> T.Text
 convertEntities t =
     either (const t) T.concat

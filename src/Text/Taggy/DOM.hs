@@ -1,33 +1,75 @@
 {-# LANGUAGE OverloadedStrings #-}
-
+-- |
+-- Module       : Text.Taggy.DOM
+-- Copyright    : (c) 2014 Alp Mestanogullari, Vikram Verma
+-- License      : BSD3
+-- Maintainer   : alpmestan@gmail.com
+-- Stability    : experimental
+-- 
+-- This module will help you represent
+-- an HTML or XML document as a tree
+-- and let you traverse it in whatever
+-- way you like.
+--
+-- This is especially useful when used in
+-- conjunction with <http://hackage.haskell.org/package/taggy-lens taggy-lens>.
 module Text.Taggy.DOM where
 
 import Data.HashMap.Strict (HashMap)
 import Data.Monoid ((<>))
 import Data.Text (Text)
+import Text.Taggy.Parser (taggyWith)
 import Text.Taggy.Types
 
 import qualified Data.HashMap.Strict as HM
+import qualified Data.Text.Lazy as LT
 
+-- | An attribute name is just a 'Text' value
 type AttrName = Text
+-- | An attribute value is just a 'Text' value
 type AttrValue = Text
 
+-- | An 'Element' here refers to a tag name, the attributes
+--   specified withing that tag, and all the children nodes
+--   of that element. An 'Element' is basically anything but
+--   \"raw\" content.
 data Element = 
-  Element { eltName     :: !Text 
-          , eltAttrs    :: !(HashMap AttrName AttrValue)
-          , eltChildren :: [Node]
+  Element { eltName     :: !Text -- ^ name of the element. e.g "a" for <a>
+          , eltAttrs    :: !(HashMap AttrName AttrValue) -- ^ a (hash)map from attribute names to attribute values
+          , eltChildren :: [Node] -- ^ children 'Node's
           }
   deriving (Eq, Show)
 
+-- | A 'Node' is either an 'Element' or some raw text.
 data Node =
     NodeElement Element
   | NodeContent Text
   deriving (Eq, Show)
 
+-- | Get the children of a node.
+--
+--   If called on some raw text, this function returns @[]@.
 nodeChildren :: Node -> [Node]
 nodeChildren (NodeContent _) = []
 nodeChildren (NodeElement e) = eltChildren e
 
+-- | Parse an HTML or XML document
+--   as a DOM tree.
+--
+--   The 'Bool' argument lets you specify
+--   whether you want to convert HTML entities
+--   to their corresponding unicode characters,
+--   just like in "Text.Taggy.Parser".
+--
+--   > parseDOM convertEntities = domify . taggyWith cventities
+parseDOM :: Bool -> LT.Text -> [Node]
+parseDOM cventities =
+  domify . taggyWith cventities
+
+-- | Transform a list of tags (produced with 'taggyWith')
+--   into a list of toplevel nodes. If the document you're working
+--   on is valid, there should only be one toplevel node, but let's
+--   not assume we're living in an ideal world.
 domify :: [Tag] -> [Node]
 domify [] = []
 domify (TagOpen name attribs True : tags)

@@ -6,8 +6,12 @@
 -- Maintainer   : alpmestan@gmail.com
 -- Stability    : experimental
 -- 
--- ???
-module Text.Taggy.Parser where 
+-- Parse an HTML or XML document as a list of 'Tag's
+-- with 'taggyWith' or 'run'.
+module Text.Taggy.Parser
+  ( taggyWith
+  , run
+  ) where 
 
 import Control.Applicative
 import Data.Attoparsec.Combinator as Atto
@@ -132,7 +136,7 @@ attributes cventities = postProcess `fmap` go emptyL
       char '>'
       return True
 
-    postProcess (l, b) = (toList l, b)
+    postProcess (l, b) = (toListL l, b)
 
 attribute :: Bool -> Parser Attribute
 attribute cventities = do
