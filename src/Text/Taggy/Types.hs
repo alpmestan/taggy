@@ -54,7 +54,7 @@ attrKey (Attribute k _) = k
 attrValue :: Attribute -> Text
 attrValue (Attribute _ v) = v
 
--- A 'Tag' can be one of the following types of tags:
+-- | A 'Tag' can be one of the following types of tags:
 --
 --   * an opening tag that has a name, a list of attributes, and whether
 --     it is a self-closing tag or not
