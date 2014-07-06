@@ -117,7 +117,7 @@ tagclose = do
   char '/'
   skipSpace
   i <- ident
-  char '>'
+  possibly '>'
   return $ TagClose i
 
 tagtext :: Bool -> Parser Tag

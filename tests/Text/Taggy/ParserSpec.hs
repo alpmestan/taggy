@@ -96,6 +96,14 @@ spec = do
                       , TagClose "body"
                       , TagClose "html"
                       ]
+    it "doesn't choke on malformed closing tags" $ 
+      "<strong>North Korea</strong." ~> htmlWith False
+        `shouldParse` [ TagOpen "strong" [] False
+                      , TagText "North Korea"
+                      , TagClose "strong"
+                      , TagText "."
+                      ]
+
 
 (~>) :: Text -> Parser a -> Either String a
 (~>) = (Test.Hspec.Attoparsec.Source.~>)
