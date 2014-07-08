@@ -40,7 +40,7 @@ license-file:        LICENSE
 author:              Alp Mestanogullari, Vikram Verma
 maintainer:          alpmestan@gmail.com
 copyright:           2014 Alp Mestanogullari, Vikram Verma
-category:            Text
+category:            Text, Web
 build-type:          Simple
 extra-source-files:  html_files/*.html
 cabal-version:       >=1.10
