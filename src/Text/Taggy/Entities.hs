@@ -5,6 +5,7 @@ module Text.Taggy.Entities
 
 import Control.Applicative
 import Control.Monad
+import Data.Char
 import Data.Monoid
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
@@ -24,17 +25,33 @@ entityConverter = do
   eof <- Atto.atEnd
   if eof
     then return [t]
-    else do amp <- Atto.char '&'
-            mentity <- parseEntity
+    else do amp       <- Atto.char '&'
+            mnextChar <- Atto.peekChar
+            mentity   <- maybe (return Nothing) pickParser mnextChar
+
             case mentity of
               Nothing -> (T.concat [t, T.singleton amp] :)
                            `fmap` entityConverter
               Just ent -> (T.concat [t, ent] :)
                            `fmap` entityConverter
 
-parseEntity :: Atto.Parser (Maybe T.Text)
-parseEntity = (flip HM.lookup htmlEntities <$> go "" 8)
-          <|> return Nothing
+  where pickParser c = if c == '#' then numericEntity else entity
+
+numericEntity :: Atto.Parser (Maybe T.Text)
+numericEntity = fmap Just go <|> return Nothing
+
+  where go = do Atto.char '#'
+                e <- fmap (T.singleton . chr) (hexa <|> decim)
+                Atto.char ';'
+                return e
+        hexa = do Atto.satisfy (\c -> c == 'x' || c == 'X')
+                  Atto.hexadecimal
+        decim = Atto.decimal
+
+
+entity :: Atto.Parser (Maybe T.Text)
+entity = (flip HM.lookup htmlEntities <$> go "" 8)
+           <|> return Nothing
   where
     go :: T.Text -> Int -> Atto.Parser T.Text
     go _ 0 = mzero
