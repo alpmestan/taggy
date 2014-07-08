@@ -1,5 +1,5 @@
 name:                taggy
-version:             0.1.0.0
+version:             0.1
 synopsis:            Efficient and simple HTML/XML parsing library
 description:         
   /taggy/ is a simple package for parsing HTML (and should work with XML)
