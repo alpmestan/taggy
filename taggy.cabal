@@ -18,7 +18,7 @@ description:
   If you like to look at your HTML through
   various optical instruments, feel free to take a look at
   the companion <http://hackage.haskell.org/package/taggy-lens taggy-lens>
-  package we've put up together.
+  package we've put up together. It makes HTML parsing a piece of cake.
   .
   * If you want to parse a document as list of tags
     and go through it as some kind of stream by just picking
