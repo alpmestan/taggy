@@ -37,9 +37,9 @@ description:
 homepage:            http://github.com/alpmestan/taggy
 license:             BSD3
 license-file:        LICENSE
-author:              Alp Mestanogullari
+author:              Alp Mestanogullari, Vikram Verma
 maintainer:          alpmestan@gmail.com
-copyright:           2014 Alp Mestanogullari
+copyright:           2014 Alp Mestanogullari, Vikram Verma
 category:            Text
 build-type:          Simple
 extra-source-files:  html_files/*.html
