@@ -20,20 +20,22 @@ description:
   the companion <http://hackage.haskell.org/package/taggy-lens taggy-lens>
   package we've put up together. It makes HTML parsing a piece of cake.
   .
-  * If you want to parse a document as list of tags
-    and go through it as some kind of stream by just picking
-    what you need, head to "Text.Taggy.Parser" and take
-    a look at 'Text.Taggy.Parser.taggyWith' and
-    'Text.Taggy.Parser.run'.
-  * If you want to parse the document as a DOM tree and
-    traverse it to find the information you need,
-    use 'Text.Taggy.DOM.parseDOM'. This is especially useful
-    when combined with the helpful combinators from
-    "Text.Taggy.Combinators".
-  * If you build some HTML manually
-    or just transform some existing DOM tree
-    and want to turn it into a 'Data.Text.Lazy.Text'
-    head to "Text.Taggy.Renderer" and look at 'Text.Taggy.Renderer.render'.
+  If you want to parse a document as list of tags
+  and go through it as some kind of stream by just picking
+  what you need, head to "Text.Taggy.Parser" and take
+  a look at 'Text.Taggy.Parser.taggyWith' and
+  'Text.Taggy.Parser.run'.
+  .
+  If you want to parse the document as a DOM tree and
+  traverse it to find the information you need,
+  use 'Text.Taggy.DOM.parseDOM'. This is especially useful
+  when combined with the helpful combinators from
+  "Text.Taggy.Combinators".
+  .
+  If you build some HTML manually
+  or just transform some existing DOM tree
+  and want to turn it into a 'Data.Text.Lazy.Text'
+  head to "Text.Taggy.Renderer" and look at 'Text.Taggy.Renderer.render'.
 homepage:            http://github.com/alpmestan/taggy
 license:             BSD3
 license-file:        LICENSE
