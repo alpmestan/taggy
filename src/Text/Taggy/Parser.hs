@@ -88,6 +88,7 @@ ident =
                  || c == '-' 
                  || c == '_' 
                  || c == ':'
+                 || c == '.'
              )
 
 attribute_ident :: Parser T.Text
