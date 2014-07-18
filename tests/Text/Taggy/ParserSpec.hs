@@ -29,6 +29,10 @@ spec = do
       "<<br>" ~> tagopen False
         `shouldParse` TagOpen "br" [] False
 
+    it "successfully parses <elem.b>" $
+      "<elem.b>" ~> tagopen False
+        `shouldParse` TagOpen "elem.b" [] False
+
     it "successfully detects self-closing tags: <br/>" $
       "<br/>" ~> tagopen False
         `shouldParse` TagOpen "br" [] True
@@ -97,11 +101,10 @@ spec = do
                       , TagClose "html"
                       ]
     it "doesn't choke on malformed closing tags" $ 
-      "<strong>North Korea</strong." ~> htmlWith False
+      "<strong>North Korea</strong" ~> htmlWith False
         `shouldParse` [ TagOpen "strong" [] False
                       , TagText "North Korea"
                       , TagClose "strong"
-                      , TagText "."
                       ]
 
 
