@@ -88,7 +88,7 @@ ident =
 
 attribute_ident :: Parser T.Text
 attribute_ident = 
-  takeWhile1 (\c -> isAlphaNum c || c `elem` "-_:(),\"/.;")
+  takeWhile1 (`notElem` ">=")
 
 tagopen :: Bool -> Parser Tag
 tagopen cventities = do
