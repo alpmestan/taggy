@@ -171,16 +171,15 @@ htmlWith cventities = go
                     (t:) `fmap` go
 
 tag :: Bool -> Parser Tag
-tag cventities = skipSpace >> tag' cventities
+tag cventities = (skipSpace >> tagStructured cventities) <|> tagtext cventities
 
-tag' :: Bool -> Parser Tag
-tag' b =
+tagStructured :: Bool -> Parser Tag
+tagStructured b =
       tagcomment
   <|> tagscript b
   <|> tagstyle b
   <|> tagopen b
   <|> tagclose
-  <|> tagtext b
 
 -- | Get a list of tags from an HTML document
 --   represented as a 'LT.Text' value.

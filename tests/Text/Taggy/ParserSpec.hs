@@ -114,6 +114,13 @@ spec = do
                       , TagClose "strong"
                       ]
 
+    it "doesn't choke on trailing newlines" $
+      "<html>foo</html>\n" ~> htmlWith False
+        `shouldParse` [ TagOpen "html" [] False
+                      , TagText "foo"
+                      , TagClose "html"
+                      , TagText "\n"
+                      ]
 
 (~>) :: Text -> Parser a -> Either String a
 (~>) = (Test.Hspec.Attoparsec.Source.~>)
