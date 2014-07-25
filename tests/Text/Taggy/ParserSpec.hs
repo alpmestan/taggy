@@ -51,6 +51,9 @@ spec = do
     it "successfully (and forgivingly) parses <title https://github.com/alpmestan/taggy\">" $
       "<title https://github.com/alpmestan/taggy/\">" ~> tagopen False
         `shouldParse` TagOpen "title" [Attribute "https://github.com/alpmestan/taggy/\"" ""] False
+    it "successfully (and forgivingly) parses <body style=margin-right: 70px;\">" $
+      "<body style=margin-right: 70px;\">" ~> tagopen False
+        `shouldParse` TagOpen "body" [Attribute "70px;\"" "", Attribute "style" "margin-right:"] False
 
     it "can successfully convert entities in attribute values: <a title=\"&nbsp;Hello!\">" $
       "<a title=\"&nbsp;Hello!\">" ~> tagopen True
