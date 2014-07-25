@@ -122,7 +122,7 @@ tagclose = do
   return $ TagClose i
 
 tagtext :: Bool -> Parser Tag
-tagtext b = (TagText . if b then convertEntities else id) `fmap` takeTill (=='<')
+tagtext b = (TagText . if b then convertEntities else id) `fmap` takeWhile1 (/='<')
 
 attributes :: Bool -> Parser ([Attribute], Bool)
 attributes cventities = postProcess `fmap` go emptyL
