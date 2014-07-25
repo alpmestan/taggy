@@ -120,7 +120,7 @@ test-suite integration
   type:
       exitcode-stdio-1.0
   ghc-options:
-      -Wall -Werror -O -fno-warn-unused-do-bind
+      -Wall -O -fno-warn-unused-do-bind
   hs-source-dirs:
       src, tests/integration
   main-is:
