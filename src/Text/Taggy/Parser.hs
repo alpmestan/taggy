@@ -84,23 +84,11 @@ possibly c =  (char c *> return ())
 
 ident :: Parser T.Text
 ident = 
-  takeWhile1 (\c -> isAlphaNum c 
-                 || c == '-' 
-                 || c == '_' 
-                 || c == ':'
-                 || c == '.'
-             )
+  takeWhile1 (\c -> isAlphaNum c || c `elem` "-_:.")
 
 attribute_ident :: Parser T.Text
 attribute_ident = 
-  takeWhile1 (\c -> isAlphaNum c 
-                 || c == '-' 
-                 || c == '_' 
-                 || c == ':'
-                 || c == '('
-                 || c == ')'
-                 || c == ','
-             )
+  takeWhile1 (\c -> isAlphaNum c || c `elem` "-_:(),\"/.")
 
 tagopen :: Bool -> Parser Tag
 tagopen cventities = do
