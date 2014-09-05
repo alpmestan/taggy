@@ -1,8 +1,8 @@
 let 
   nixpkgs = (import <nixpkgs> {}).fetchgit {
-    url    = "git@github.com:zalora/nixpkgs.git";
-    rev    = "f8bd9e70fab91607caa9e3039f4059db77540a54";
-    sha256 = "3284674b4d7efd6290dce16837d1c67240aaae5f3d77b21e051f38faba6d7415";
+    url    = "git@github.com:nixos/nixpkgs.git";
+    rev    = "718106e958cbd872ecf3e08a451b80f68f950dae";
+    sha256 = "72ef1a4b66312676d0b7e1684d3d68a5e82fdff1725d8816a9dac7eff4ee81e8";
   };
 in
 { system ? builtins.currentSystem
