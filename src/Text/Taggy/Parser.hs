@@ -95,6 +95,7 @@ tagopen cventities = do
   char '<'
   possibly '<'
   possibly '!'
+  possibly '?'
   skipSpace
   i <- ident
   (as, autoclose) <- attributes cventities
@@ -125,6 +126,7 @@ attributes cventities = postProcess `fmap` go emptyL
     tagends = skipSpace >> parseEnd
 
     parseEnd = autoClosing
+           <|> ("?>" *> return False)
            <|> (">" *> return False)
 
     autoClosing = do
