@@ -107,6 +107,7 @@ tagclose = do
   char '/'
   skipSpace
   i <- ident
+  skipSpace
   possibly '>'
   return $ TagClose i
 
