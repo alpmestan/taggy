@@ -68,6 +68,6 @@ Haddocks
 
 I try to keep an up-to-date copy of the docs on my server:
 
-- [taggy](http://alpmestan.com/taggy/)
-- [taggy-lens](http://alpmestan.com/taggy-lens/)
+- [taggy](https://hackage.haskell.org/package/taggy)
+- [taggy-lens](https://hackage.haskell.org/package/taggy-lens)
 
