@@ -5,12 +5,11 @@
 -- License      : BSD3
 -- Maintainer   : alpmestan@gmail.com
 -- Stability    : experimental
--- 
+--
 -- Render a DOM tree (from "Text.Taggy.DOM")
 -- using the excellent blaze markup rendering library.
 module Text.Taggy.Renderer where
 
-import Data.Foldable (Foldable(foldMap))
 import Data.HashMap.Strict (HashMap, foldlWithKey')
 import Data.Monoid ((<>))
 import Data.Text (Text, unpack)
@@ -23,7 +22,7 @@ import Text.Blaze.Internal (ChoiceString(..), StaticString(..), MarkupM(..))
 
 -- renderMarkup does entity conversion implicitly, and an override at the
 -- constructor level is needed to control this; `PreEscaped (Text s)` is not
--- escaped, but a naked `Text s` is. 
+-- escaped, but a naked `Text s` is.
 
 class AsMarkup a where
   -- | If the first parameter is true, we align the constructors for entity

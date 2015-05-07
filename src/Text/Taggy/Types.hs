@@ -5,34 +5,34 @@
 -- License      : BSD3
 -- Maintainer   : alpmestan@gmail.com
 -- Stability    : experimental
--- 
+--
 -- Core types of /taggy/.
 module Text.Taggy.Types
-	( -- * 'Tag' type
-	  Tag(..)
-	, tname
-	, isTagOpen
-	, isTagClose
-	, isTagText
-	, isTagComment
-	, isTagScript
-	, isTagStyle
-	, tagsNamed
+    ( -- * 'Tag' type
+      Tag(..)
+    , tname
+    , isTagOpen
+    , isTagClose
+    , isTagText
+    , isTagComment
+    , isTagScript
+    , isTagStyle
+    , tagsNamed
 
     , -- * 'Attribute's
       Attribute(..)
-	, attrs
-	, attrKey
-	, attrValue
+    , attrs
+    , attrKey
+    , attrValue
 
-	, -- * A small difference list implementation
-	  L
-	, emptyL
-	, appL
-	, insertL
-	, singletonL
-	, toListL
-	) where
+    , -- * A small difference list implementation
+      L
+    , emptyL
+    , appL
+    , insertL
+    , singletonL
+    , toListL
+    ) where
 
 import Data.Text (Text, toCaseFold)
 
@@ -119,7 +119,7 @@ isTagStyle _          = False
 -- | Get all the (opening) tags with the given name
 tagsNamed :: Text -> [Tag] -> [Tag]
 tagsNamed nam = filter (named nam)
-  
+
   where named n (TagOpen t _ _) = toCaseFold n == toCaseFold t
         named _ _               = False
 

@@ -11,7 +11,6 @@
 module Text.Taggy.Combinators (hasName, hasAttr, getAttr, innerText, (//), (/&), (/*), trees, subtrees) where
 
 import Prelude hiding (lookup)
-import Data.Monoid (mconcat)
 import Control.Monad (ap, (<=<))
 import Data.Text (Text)
 import Text.Taggy.DOM (Element(..), Node(..), AttrName, AttrValue)
@@ -47,7 +46,7 @@ innerText = mconcat . map getContent . eltChildren
 (//) = flip filter . trees
 
 -- | Given a sequence of predicates, filter an element
--- and its children, selecting only those subtrees who 
+-- and its children, selecting only those subtrees who
 -- match the provided predicate for each point.
 --
 -- >>> let element = (\(NodeElement e) -> e) . head . domify . taggyWith False $ "<html>foo<bar class=\"el\">baz</bar><qux class=\"el\"><quux></quux></qux></html>"
@@ -60,8 +59,8 @@ innerText = mconcat . map getContent . eltChildren
 (/&) element [] = [element]
 (/&) element (x:xs) = (/& xs) <=< filter x . catElements $ eltChildren element
 
--- | Filter from all subtrees (including the one 
--- with the target as its root), those matching the 
+-- | Filter from all subtrees (including the one
+-- with the target as its root), those matching the
 -- given sequence of predicates.
 
 (/*) :: Element -> [(Element -> Bool)] -> [Element]

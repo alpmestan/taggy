@@ -5,7 +5,7 @@
 -- License      : BSD3
 -- Maintainer   : alpmestan@gmail.com
 -- Stability    : experimental
--- 
+--
 -- Parse an HTML or XML document as a list of 'Tag's
 -- with 'taggyWith' or 'run'.
 module Text.Taggy.Parser
@@ -19,7 +19,7 @@ module Text.Taggy.Parser
   , tagscript
   , tagtext
   , htmlWith
-  ) where 
+  ) where
 
 import Control.Applicative
 import Data.Attoparsec.Combinator as Atto
@@ -45,8 +45,8 @@ scannerFor ending = go
                | otherwise                       = Just 0
 
 matchUntil :: T.Text -> Parser T.Text
-matchUntil endStr = 
-  T.dropEnd (T.length endStr) 
+matchUntil endStr =
+  T.dropEnd (T.length endStr)
     `fmap` scan 0 (scannerFor endStr)
 
 delimitedBy :: T.Text -> T.Text -> Parser (T.Text, T.Text, T.Text)
@@ -83,12 +83,12 @@ possibly c =  (char c *> return ())
           <|> return ()
 
 ident :: Parser T.Text
-ident = 
-  takeWhile1 (\c -> isAlphaNum c || c `elem` "-_:.")
+ident =
+  takeWhile1 (\c -> isAlphaNum c || c `elem` ("-_:." :: String))
 
 attribute_ident :: Parser T.Text
-attribute_ident = 
-  takeWhile1 (`notElem` ">=")
+attribute_ident =
+  takeWhile1 (`notElem` (">=" :: String))
 
 tagopen :: Bool -> Parser Tag
 tagopen cventities = do
@@ -116,8 +116,8 @@ tagtext b = (TagText . if b then convertEntities else id) `fmap` takeWhile1 (/='
 
 attributes :: Bool -> Parser ([Attribute], Bool)
 attributes cventities = postProcess `fmap` go emptyL
-  where 
-    go l =  (do autoclose <- tagends 
+  where
+    go l =  (do autoclose <- tagends
                 return (l, autoclose)
             )
         <|> ( do attr <- attribute cventities
@@ -142,7 +142,7 @@ attribute :: Bool -> Parser Attribute
 attribute cventities = do
   skipSpace
   key <- quoted <|> attribute_ident
-  value <- option "" $ fmap (if cventities then convertEntities else id) $ do 
+  value <- option "" $ fmap (if cventities then convertEntities else id) $ do
     possibly ' '
     "="
     possibly ' '
