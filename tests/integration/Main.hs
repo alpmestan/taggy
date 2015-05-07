@@ -3,7 +3,6 @@
 module Main (main) where
 
 import Prelude hiding (readFile)
-import Data.Functor ((<$>))
 import Data.List (isSuffixOf)
 import Data.Text.Lazy (Text)
 import Data.Text.Lazy.IO (readFile)
@@ -13,9 +12,9 @@ import Test.Hspec (hspec, runIO, describe, it, shouldSatisfy)
 import Text.Taggy (taggyWith)
 
 getHTMLFiles :: IO [(FilePath, Text)]
-getHTMLFiles = getDataFileName "html_files" 
-           >>= setCurrentDirectory 
-            >> filter (isSuffixOf ".html") <$> getDirectoryContents "."  
+getHTMLFiles = getDataFileName "html_files"
+           >>= setCurrentDirectory
+            >> filter (isSuffixOf ".html") <$> getDirectoryContents "."
            >>= mapM (\name -> fmap (name,) $ readFile name)
 
 main :: IO ()
