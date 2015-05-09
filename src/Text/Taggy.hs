@@ -32,8 +32,7 @@
 -- * If you want to parse the document as a DOM tree and
 --   traverse it to find the information you need,
 --   use 'Text.Taggy.DOM.parseDOM'. This is especially useful
---   when combined with the helpful combinators from
---   "Text.Taggy.Combinators".
+--   when used in conjunction with <http://hackage.haskell.org/package/taggy-lens taggy-lens>.
 -- * If you build some HTML manually
 --   or just transform some existing DOM tree
 --   and want to turn it into a 'Data.Text.Lazy.Text'
@@ -43,12 +42,10 @@ module Text.Taggy
     module Text.Taggy.Types
   , module Text.Taggy.Parser
   , module Text.Taggy.DOM
-  , module Text.Taggy.Combinators
   , module Text.Taggy.Renderer
   ) where 
 
 import Text.Taggy.Types
 import Text.Taggy.Parser
 import Text.Taggy.DOM
-import Text.Taggy.Combinators
 import Text.Taggy.Renderer

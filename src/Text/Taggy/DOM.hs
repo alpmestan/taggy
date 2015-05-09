@@ -12,8 +12,8 @@
 -- way you like.
 --
 -- This is especially useful when used in
--- conjunction with <http://hackage.haskell.org/package/taggy-lens taggy-lens>, or
--- with the "Text.Taggy.Combinators" module (which is used by /taggy-lens/).
+-- conjunction with <http://hackage.haskell.org/package/taggy-lens taggy-lens>
+
 module Text.Taggy.DOM where
 
 import Data.HashMap.Strict (HashMap)

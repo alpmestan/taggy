@@ -1,5 +1,5 @@
 name:                taggy
-version:             0.1.4
+version:             0.2.0
 synopsis:            Efficient and simple HTML/XML parsing library
 description:         
   /taggy/ is a simple package for parsing HTML (and should work with XML)
@@ -29,8 +29,7 @@ description:
   If you want to parse the document as a DOM tree and
   traverse it to find the information you need,
   use 'Text.Taggy.DOM.parseDOM'. This is especially useful
-  when combined with the helpful combinators from
-  "Text.Taggy.Combinators".
+  when used in conjunction with <http://hackage.haskell.org/package/taggy-lens taggy-lens>.
   .
   If you build some HTML manually
   or just transform some existing DOM tree
@@ -50,7 +49,6 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:     Text.Taggy,
-                       Text.Taggy.Combinators,
                        Text.Taggy.DOM,
                        Text.Taggy.Entities,
                        Text.Taggy.Parser,
