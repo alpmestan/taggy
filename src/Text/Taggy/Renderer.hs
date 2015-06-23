@@ -10,7 +10,7 @@
 -- using the excellent blaze markup rendering library.
 module Text.Taggy.Renderer where
 
-import Data.Foldable (Foldable(foldMap))
+import Data.Foldable (foldMap)
 import Data.HashMap.Strict (HashMap, foldlWithKey')
 import Data.Monoid ((<>))
 import Data.Text (Text, unpack)
