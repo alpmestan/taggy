@@ -5,7 +5,7 @@
 -- License      : BSD3
 -- Maintainer   : alpmestan@gmail.com
 -- Stability    : experimental
--- 
+--
 -- This module will help you represent
 -- an HTML or XML document as a tree
 -- and let you traverse it in whatever
@@ -16,14 +16,15 @@
 
 module Text.Taggy.DOM where
 
-import Data.HashMap.Strict (HashMap)
-import Data.Monoid ((<>))
-import Data.Text (Text)
-import Text.Taggy.Parser (taggyWith)
-import Text.Taggy.Types
+import           Data.HashMap.Strict (HashMap)
+import           Data.List.NonEmpty  (NonEmpty (..))
+import           Data.Semigroup      ((<>))
+import           Data.Text           (Text)
+import           Text.Taggy.Parser   (taggyWith)
+import           Text.Taggy.Types
 
 import qualified Data.HashMap.Strict as HM
-import qualified Data.Text.Lazy as LT
+import qualified Data.Text.Lazy      as LT
 
 -- | An attribute name is just a 'Text' value
 type AttrName = Text
@@ -34,9 +35,9 @@ type AttrValue = Text
 --   specified withing that tag, and all the children nodes
 --   of that element. An 'Element' is basically anything but
 --   \"raw\" content.
-data Element = 
+data Element =
   Element { eltName     :: !Text -- ^ name of the element. e.g "a" for <a>
-          , eltAttrs    :: !(HashMap AttrName AttrValue) -- ^ a (hash)map from attribute names to attribute values
+          , eltAttrs    :: !(HashMap AttrName (NonEmpty AttrValue)) -- ^ a (hash)map from attribute names to attribute values
           , eltChildren :: [Node] -- ^ children 'Node's
           }
   deriving (Eq, Show)
@@ -76,10 +77,10 @@ domify [] = []
 domify (TagOpen name attribs True : tags)
   = NodeElement (Element name as []) : domify tags
 
-   where as  = HM.fromListWith (\v1 v2 -> v1 <> " " <> v2)
+   where as  = HM.fromListWith (\v1 v2 -> v1 <> v2)
              . map attrToPair $ attribs
 
-         attrToPair (Attribute k v) = (k, v)
+         attrToPair (Attribute k v) = (k, singleton v)
 
 domify (TagText txt : tags)
   = NodeContent txt : domify tags
@@ -88,10 +89,10 @@ domify (TagOpen name attribs False : tags)
   = NodeElement (Element name as cs) : domify unusedTags
 
   where (cs, unusedTags) = untilClosed name ([], tags)
-        as  = HM.fromListWith (\v1 v2 -> v1 <> " " <> v2)
+        as  = HM.fromListWith (\v1 v2 -> v1 <> v2)
             . map attrToPair $ attribs
 
-        attrToPair (Attribute k v) = (k, v)
+        attrToPair (Attribute k v) = (k, singleton v)
 
 domify (TagClose _ : tags) = domify tags
 domify (TagComment _ : tags) = domify tags
@@ -107,7 +108,7 @@ untilClosed name (cousins, TagClose n : ts)
   | n == name = (cousins, ts)
   | otherwise = untilClosed name ( cousins
                                  , TagOpen n [] False
-                                 : TagClose n 
+                                 : TagClose n
                                  : ts )
 
 untilClosed name (cousins, TagText t : ts)
@@ -124,10 +125,10 @@ untilClosed name (cousins, TagOpen n as True : ts)
         cousins''       = NodeElement elt : cousins'
     in (cousins++cousins'', ts')
 
-   where as' = HM.fromListWith (\v1 v2 -> v1 <> " " <> v2)
+   where as' = HM.fromListWith (\v1 v2 -> v1 <> v2)
              . map attrToPair $ as
 
-         attrToPair (Attribute k v) = (k, v)
+         attrToPair (Attribute k v) = (k, singleton v)
 
 untilClosed name (cousins, TagOpen n as False : ts)
  = let (insideNew, ts') = untilClosed n ([], ts)
@@ -136,37 +137,39 @@ untilClosed name (cousins, TagOpen n as False : ts)
        cousins''        = NodeElement elt : cousins'
    in (cousins'', ts'')
 
-   where as' = HM.fromListWith (\v1 v2 -> v1 <> " " <> v2)
+   where as' = HM.fromListWith (\v1 v2 -> v1 <> v2)
              . map attrToPair $ as
 
-         attrToPair (Attribute k v) = (k, v)
+         attrToPair (Attribute k v) = (k, singleton v)
 
 untilClosed name (cousins, TagScript tago scr _ : ts)
   = let (TagOpen n at _) = tago
         (cousins', ts')  = untilClosed name (cousins, ts)
         cousins''        = NodeElement (Element n (at' at) [NodeContent scr]) : cousins'
-            
+
     in (cousins++cousins'', ts')
 
-   where at' at = HM.fromListWith (\v1 v2 -> v1 <> " " <> v2)
+   where at' at = HM.fromListWith (\v1 v2 -> v1 <> v2)
                 . map attrToPair $ at
 
-         attrToPair (Attribute k v) = (k, v)
+         attrToPair (Attribute k v) = (k, singleton v)
 
 untilClosed name (cousins, TagStyle tago sty _ : ts)
   = let (TagOpen n at _) = tago
         (cousins', ts')  = untilClosed name (cousins, ts)
         cousins''        = NodeElement (Element n (at' at) [NodeContent sty]) : cousins'
-            
+
     in (cousins++cousins'', ts')
 
-   where at' at = HM.fromListWith (\v1 v2 -> v1 <> " " <> v2)
+   where at' at = HM.fromListWith (\v1 v2 -> v1 <> v2)
                 . map attrToPair $ at
 
-         attrToPair (Attribute k v) = (k, v)
+         attrToPair (Attribute k v) = (k, singleton v)
 
 untilClosed _ (cs, []) = (cs, [])
 
 convertText :: Text -> Node
 convertText t = NodeContent t
 
+singleton :: a -> NonEmpty a
+singleton a = a :| []
