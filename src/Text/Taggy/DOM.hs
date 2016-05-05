@@ -17,7 +17,8 @@
 module Text.Taggy.DOM where
 
 import           Data.HashMap.Strict (HashMap)
-import           Data.Monoid         ((<>))
+import           Data.List.NonEmpty  (NonEmpty (..))
+import           Data.Semigroup      ((<>))
 import           Data.Text           (Text)
 import           Text.Taggy.Parser   (taggyWith)
 import           Text.Taggy.Types
@@ -36,7 +37,7 @@ type AttrValue = Text
 --   \"raw\" content.
 data Element =
   Element { eltName     :: !Text -- ^ name of the element. e.g "a" for <a>
-          , eltAttrs    :: !(HashMap AttrName [AttrValue]) -- ^ a (hash)map from attribute names to attribute values
+          , eltAttrs    :: !(HashMap AttrName (NonEmpty AttrValue)) -- ^ a (hash)map from attribute names to attribute values
           , eltChildren :: [Node] -- ^ children 'Node's
           }
   deriving (Eq, Show)
@@ -79,7 +80,7 @@ domify (TagOpen name attribs True : tags)
    where as  = HM.fromListWith (\v1 v2 -> v1 <> v2)
              . map attrToPair $ attribs
 
-         attrToPair (Attribute k v) = (k, [v])
+         attrToPair (Attribute k v) = (k, singleton v)
 
 domify (TagText txt : tags)
   = NodeContent txt : domify tags
@@ -91,7 +92,7 @@ domify (TagOpen name attribs False : tags)
         as  = HM.fromListWith (\v1 v2 -> v1 <> v2)
             . map attrToPair $ attribs
 
-        attrToPair (Attribute k v) = (k, [v])
+        attrToPair (Attribute k v) = (k, singleton v)
 
 domify (TagClose _ : tags) = domify tags
 domify (TagComment _ : tags) = domify tags
@@ -127,7 +128,7 @@ untilClosed name (cousins, TagOpen n as True : ts)
    where as' = HM.fromListWith (\v1 v2 -> v1 <> v2)
              . map attrToPair $ as
 
-         attrToPair (Attribute k v) = (k, [v])
+         attrToPair (Attribute k v) = (k, singleton v)
 
 untilClosed name (cousins, TagOpen n as False : ts)
  = let (insideNew, ts') = untilClosed n ([], ts)
@@ -139,7 +140,7 @@ untilClosed name (cousins, TagOpen n as False : ts)
    where as' = HM.fromListWith (\v1 v2 -> v1 <> v2)
              . map attrToPair $ as
 
-         attrToPair (Attribute k v) = (k, [v])
+         attrToPair (Attribute k v) = (k, singleton v)
 
 untilClosed name (cousins, TagScript tago scr _ : ts)
   = let (TagOpen n at _) = tago
@@ -151,7 +152,7 @@ untilClosed name (cousins, TagScript tago scr _ : ts)
    where at' at = HM.fromListWith (\v1 v2 -> v1 <> v2)
                 . map attrToPair $ at
 
-         attrToPair (Attribute k v) = (k, [v])
+         attrToPair (Attribute k v) = (k, singleton v)
 
 untilClosed name (cousins, TagStyle tago sty _ : ts)
   = let (TagOpen n at _) = tago
@@ -163,9 +164,12 @@ untilClosed name (cousins, TagStyle tago sty _ : ts)
    where at' at = HM.fromListWith (\v1 v2 -> v1 <> v2)
                 . map attrToPair $ at
 
-         attrToPair (Attribute k v) = (k, [v])
+         attrToPair (Attribute k v) = (k, singleton v)
 
 untilClosed _ (cs, []) = (cs, [])
 
 convertText :: Text -> Node
 convertText t = NodeContent t
+
+singleton :: a -> NonEmpty a
+singleton a = a :| []

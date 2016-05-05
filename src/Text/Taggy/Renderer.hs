@@ -17,6 +17,7 @@ module Text.Taggy.Renderer where
 import           Data.Foldable            (foldMap)
 import           Data.HashMap.Strict      (HashMap, foldlWithKey')
 import           Data.List                (foldl')
+import           Data.List.NonEmpty       (NonEmpty)
 import           Data.Monoid              ((<>))
 import           Data.Text                (Text, unpack)
 import           Data.Text.Encoding       (encodeUtf8)
@@ -60,7 +61,7 @@ class Renderable a where
 instance AsMarkup a => Renderable a where
   renderWith = fmap renderMarkup . toMarkup
 
-toAttribute :: HashMap Text [Text] -> (Markup -> Markup)
+toAttribute :: HashMap Text (NonEmpty Text) -> (Markup -> Markup)
 toAttribute = flip $ foldlWithKey' toAttribute'
   where toAttribute' html attr value = foldl' (\html' v -> AddCustomAttribute (Text attr) (Text v) html') html value
 
