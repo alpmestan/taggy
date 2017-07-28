@@ -1,4 +1,4 @@
-{-# LANGUAGE LambdaCase, RecordWildCards, FlexibleInstances, UndecidableInstances, OverloadedStrings #-}
+{-# LANGUAGE CPP, LambdaCase, RecordWildCards, FlexibleInstances, UndecidableInstances, OverloadedStrings #-}
 -- |
 -- Module       : Text.Taggy.Renderer
 -- Copyright    : (c) 2014 Alp Mestanogullari, Vikram Verma
@@ -33,7 +33,13 @@ class AsMarkup a where
 -- | A 'Node' is convertible to 'Markup'
 instance AsMarkup Node where
   toMarkup convertEntities = \case
-    NodeContent text -> Content $ if convertEntities then Text text else PreEscaped (Text text)
+#if MIN_VERSION_blaze_markup(0,8,0)
+    NodeContent text -> flip Content () $
+#else
+    NodeContent text -> Content $
+#endif
+      if convertEntities then Text text else PreEscaped (Text text)
+
     NodeElement elmt -> toMarkup convertEntities elmt
 
 -- | An 'Element' is convertible to 'Markup'
