@@ -1,5 +1,5 @@
 name:                taggy
-version:             0.2.1
+version:             0.3.0
 synopsis:            Efficient and simple HTML/XML parsing library
 description:         
   /taggy/ is a simple package for parsing HTML (and should work with XML)
@@ -58,6 +58,7 @@ library
   build-depends:       base >=4.6 && <5,
                        blaze-html >= 0.7,
                        blaze-markup >= 0.6,
+                       data-default >= 0.2,
                        text >= 1,
                        attoparsec >=0.11,
                        vector >=0.7,
@@ -71,6 +72,7 @@ executable taggy
   main-is:             taggy.hs
   hs-source-dirs:      example
   build-depends:       base >=4.5 && <5,
+                       data-default >= 0.2,
                        text >= 1,
                        attoparsec >=0.12,
                        taggy

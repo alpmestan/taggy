@@ -1,6 +1,7 @@
 module Main where
 
 import Data.Attoparsec.Text.Lazy (eitherResult)
+import Data.Default
 import System.Environment
 import Text.Taggy
 
@@ -30,9 +31,9 @@ taggy fp = do
   content <- T.readFile fp
   either (\s -> putStrLn $ "couldn't parse: " ++ s) 
          (mapM_ print) 
-         (eitherResult $ run True content)
+         (eitherResult $ run def content)
 
 dom :: FilePath -> IO ()
 dom fp = do
   content <- T.readFile fp
-  mapM_ print . domify $ taggyWith True content
+  mapM_ print . domify $ taggyWith def content
