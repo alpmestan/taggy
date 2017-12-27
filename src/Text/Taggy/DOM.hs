@@ -16,10 +16,11 @@
 
 module Text.Taggy.DOM where
 
+import Data.Default
 import Data.HashMap.Strict (HashMap)
 import Data.Monoid ((<>))
 import Data.Text (Text)
-import Text.Taggy.Parser (taggyWith)
+import Text.Taggy.Parser (taggyWith, ParseOptions)
 import Text.Taggy.Types
 
 import qualified Data.HashMap.Strict as HM
@@ -62,10 +63,10 @@ nodeChildren (NodeElement e) = eltChildren e
 --   to their corresponding unicode characters,
 --   just like in "Text.Taggy.Parser".
 --
---   > parseDOM convertEntities = domify . taggyWith cventities
-parseDOM :: Bool -> LT.Text -> [Node]
-parseDOM cventities =
-  domify . taggyWith cventities
+--   > parseDOM options = domify . taggyWith options
+parseDOM :: ParseOptions -> LT.Text -> [Node]
+parseDOM options =
+  domify . taggyWith options
 
 -- | Transform a list of tags (produced with 'taggyWith')
 --   into a list of toplevel nodes. If the document you're working

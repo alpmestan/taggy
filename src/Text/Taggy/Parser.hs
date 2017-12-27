@@ -11,6 +11,7 @@
 module Text.Taggy.Parser
   ( taggyWith
   , run
+  , ParseOptions(..)
   , -- * Internal parsers
     tagopen
   , tagclose
@@ -26,6 +27,7 @@ import Data.Attoparsec.Combinator as Atto
 import Data.Attoparsec.Text       as Atto
 import qualified Data.Attoparsec.Text.Lazy as AttoLT
 import Data.Char
+import Data.Default
 import Data.Monoid
 import Text.Taggy.Entities
 import Text.Taggy.Types
@@ -33,6 +35,20 @@ import Text.Taggy.Types
 import qualified Data.Text      as T
 import qualified Data.Text.Lazy as LT
 import qualified Data.Vector    as V
+
+data ParseOptions =
+  ParseOptions { parseOptionConvertEntities :: Bool -- ^ Convert HTML entities to unicode characters
+               , parseOptionVoidTags :: [T.Text] -- ^ tags that cannot have children
+               }
+  deriving (Eq, Show)
+
+instance Default ParseOptions where
+  def = ParseOptions { parseOptionConvertEntities = True
+                     , parseOptionVoidTags = html5VoidTags
+                     }
+
+html5VoidTags :: [T.Text]
+html5VoidTags = ["area", "base", "br", "col", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr"]
 
 scannerFor :: T.Text -> Int -> Char -> Maybe Int
 scannerFor ending = go
@@ -55,11 +71,11 @@ delimitedBy begStr endStr = do
   mid <- matchUntil endStr
   return (begStr, mid, endStr)
 
-delimitedByTag :: T.Text -> Bool -> Parser (Tag, T.Text, Tag)
-delimitedByTag t cventities = do
+delimitedByTag :: T.Text -> ParseOptions -> Parser (Tag, T.Text, Tag)
+delimitedByTag t options = do
   char '<'
   string t
-  (as, _) <- attributes cventities
+  (as, _) <- attributes options
   inside <- matchUntil $ "</" <> t <> ">"
   return (TagOpen t as False, inside, TagClose t)
 
@@ -68,14 +84,14 @@ tagcomment = do
   (_, comm, _) <- delimitedBy "<!--" "-->"
   return $ TagComment comm
 
-tagscript :: Bool -> Parser Tag
-tagscript cventities = do
-  (open, scr, close) <- delimitedByTag "script" cventities
+tagscript :: ParseOptions -> Parser Tag
+tagscript options = do
+  (open, scr, close) <- delimitedByTag "script" options
   return $ TagScript open scr close
 
-tagstyle :: Bool -> Parser Tag
-tagstyle cventities = do
-  (open, st, close) <- delimitedByTag "style" cventities
+tagstyle :: ParseOptions -> Parser Tag
+tagstyle options = do
+  (open, st, close) <- delimitedByTag "style" options
   return $ TagStyle open st close
 
 possibly :: Char -> Parser ()
@@ -90,16 +106,16 @@ attribute_ident :: Parser T.Text
 attribute_ident =
   takeWhile1 (`notElem` (">=" :: String))
 
-tagopen :: Bool -> Parser Tag
-tagopen cventities = do
+tagopen :: ParseOptions -> Parser Tag
+tagopen options = do
   char '<'
   possibly '<'
   possibly '!'
   possibly '?'
   skipSpace
   i <- ident
-  (as, autoclose) <- attributes cventities
-  return $ TagOpen i as autoclose
+  (as, autoclose) <- attributes options
+  return $ TagOpen i as (if T.toLower i `elem` parseOptionVoidTags options then True else autoclose)
 
 tagclose :: Parser Tag
 tagclose = do
@@ -111,16 +127,16 @@ tagclose = do
   possibly '>'
   return $ TagClose i
 
-tagtext :: Bool -> Parser Tag
-tagtext b = (TagText . if b then convertEntities else id) `fmap` takeWhile1 (/='<')
+tagtext :: ParseOptions -> Parser Tag
+tagtext options = (TagText . if parseOptionConvertEntities options then convertEntities else id) `fmap` takeWhile1 (/='<')
 
-attributes :: Bool -> Parser ([Attribute], Bool)
-attributes cventities = postProcess `fmap` go emptyL
+attributes :: ParseOptions -> Parser ([Attribute], Bool)
+attributes options = postProcess `fmap` go emptyL
   where
     go l =  (do autoclose <- tagends
                 return (l, autoclose)
             )
-        <|> ( do attr <- attribute cventities
+        <|> ( do attr <- attribute options
                  go (insertL attr l)
             )
 
@@ -138,11 +154,11 @@ attributes cventities = postProcess `fmap` go emptyL
 
     postProcess (l, b) = (toListL l, b)
 
-attribute :: Bool -> Parser Attribute
-attribute cventities = do
+attribute :: ParseOptions -> Parser Attribute
+attribute options = do
   skipSpace
   key <- quoted <|> attribute_ident
-  value <- option "" $ fmap (if cventities then convertEntities else id) $ do
+  value <- option "" $ fmap (if parseOptionConvertEntities options then convertEntities else id) $ do
     possibly ' '
     "="
     possibly ' '
@@ -163,40 +179,36 @@ attribute cventities = do
 
         unquoted = Atto.takeTill (\c -> isSpace c || c == '>')
 
-htmlWith :: Bool -> Parser [Tag]
-htmlWith cventities = go
+htmlWith :: ParseOptions -> Parser [Tag]
+htmlWith options = go
 
   where go = do
           finished <- atEnd
           if finished
             then return []
-            else do t <- tag cventities
+            else do t <- tag options
                     (t:) `fmap` go
 
-tag :: Bool -> Parser Tag
-tag cventities = (skipSpace >> tagStructured cventities) <|> tagtext cventities
+tag :: ParseOptions -> Parser Tag
+tag options = (skipSpace >> tagStructured options) <|> tagtext options
 
-tagStructured :: Bool -> Parser Tag
-tagStructured b =
+tagStructured :: ParseOptions -> Parser Tag
+tagStructured options =
       tagcomment
-  <|> tagscript b
-  <|> tagstyle b
-  <|> tagopen b
+  <|> tagscript options
+  <|> tagstyle options
+  <|> tagopen options
   <|> tagclose
 
 -- | Get a list of tags from an HTML document
 --   represented as a 'LT.Text' value.
---
---   The 'Bool' lets you specify whether you want
---   to convert HTML entities to their corresponding
---   unicode character. ('True' means "yes convert")
-taggyWith :: Bool -> LT.Text -> [Tag]
-taggyWith cventities =
+taggyWith :: ParseOptions -> LT.Text -> [Tag]
+taggyWith options =
     either (const []) id
   . AttoLT.eitherResult
-  . AttoLT.parse (htmlWith cventities)
+  . AttoLT.parse (htmlWith options)
 
 -- | Same as 'taggyWith' but hands you back a
 --   'AttoLT.Result' from @attoparsec@
-run :: Bool -> LT.Text -> AttoLT.Result [Tag]
-run cventities = AttoLT.parse (htmlWith cventities)
+run :: ParseOptions -> LT.Text -> AttoLT.Result [Tag]
+run options = AttoLT.parse (htmlWith options)
