@@ -106,6 +106,7 @@ test-suite unit
   build-depends:
       base    == 4.*
     , blaze-html
+    , data-default
     , blaze-markup
     , text
     , hspec
@@ -129,6 +130,7 @@ test-suite integration
       base    == 4.*
     , blaze-html
     , blaze-markup
+    , data-default
     , directory
     , text
     , hspec >= 1.11
