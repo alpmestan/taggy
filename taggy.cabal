@@ -111,6 +111,8 @@ test-suite unit
     , vector
     , attoparsec
     , unordered-containers
+  other-modules:
+    Paths_taggy
   default-language:
       Haskell2010
 
