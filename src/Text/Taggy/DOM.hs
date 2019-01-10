@@ -67,38 +67,40 @@ parseDOM :: Bool -> LT.Text -> [Node]
 parseDOM cventities =
   domify . taggyWith cventities
 
+attrMap :: [Attribute] -> HashMap Text Text
+attrMap attribs =
+  HM.fromListWith (\v1 v2 -> v1 <> " " <> v2)
+    . map attrToPair
+    $ attribs
+  where
+    attrToPair (Attribute k v) = (k, v)
+
+elemNode :: Text -> [Attribute] -> [Node] -> Node
+elemNode name attribs children
+  = NodeElement (Element name (attrMap attribs) children)
+
+
 -- | Transform a list of tags (produced with 'taggyWith')
 --   into a list of toplevel nodes. If the document you're working
 --   on is valid, there should only be one toplevel node, but let's
 --   not assume we're living in an ideal world.
 domify :: [Tag] -> [Node]
-domify [] = []
-domify (TagOpen name attribs True : tags)
-  = NodeElement (Element name as []) : domify tags
-
-   where as  = HM.fromListWith (\v1 v2 -> v1 <> " " <> v2)
-             . map attrToPair $ attribs
-
-         attrToPair (Attribute k v) = (k, v)
-
-domify (TagText txt : tags)
-  = NodeContent txt : domify tags
-
-domify (TagOpen name attribs False : tags)
-  = NodeElement (Element name as cs) : domify unusedTags
-
-  where (cs, unusedTags) = untilClosed name ([], tags)
-        as  = HM.fromListWith (\v1 v2 -> v1 <> " " <> v2)
-            . map attrToPair $ attribs
-
-        attrToPair (Attribute k v) = (k, v)
-
-domify (TagClose _ : tags) = domify tags
-domify (TagComment _ : tags) = domify tags
-
+domify [] =
+  []
+domify (TagOpen name attribs True : tags) =
+  elemNode name attribs [] : domify tags
+domify (TagText txt : tags) =
+  NodeContent txt : domify tags
+domify (TagOpen name attribs False : tags) =
+  elemNode name attribs children : domify unusedTags
+  where
+    (children, unusedTags) = untilClosed name ([], tags)
+domify (TagClose _ : tags) =
+  domify tags
+domify (TagComment _ : tags) =
+  domify tags
 domify (TagScript tago scr tagc : tags) =
   domify $ [tago, TagText scr, tagc] ++ tags
-
 domify (TagStyle tago sty tagc : tags) =
   domify $ [tago, TagText sty, tagc] ++ tags
 
