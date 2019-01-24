@@ -174,7 +174,7 @@ htmlWith cventities = go
                     (t:) `fmap` go
 
 tag :: Bool -> Parser Tag
-tag cventities = (skipSpace >> tagStructured cventities) <|> tagtext cventities
+tag cventities = tagStructured cventities <|> tagtext cventities
 
 tagStructured :: Bool -> Parser Tag
 tagStructured b =

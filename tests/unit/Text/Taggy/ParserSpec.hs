@@ -125,5 +125,20 @@ spec = do
                       , TagText "\n"
                       ]
 
+    it "retains whitespace between tags" $
+      "<br/> <br/>" ~> htmlWith False
+        `shouldParse` [ TagOpen "br" [] True
+                      , TagText " "
+                      , TagOpen "br" [] True
+                      ]
+
+    it "retains whitespace around text content" $
+      "<span>hello</span> world" ~> htmlWith False
+        `shouldParse` [ TagOpen "span" [] False
+                      , TagText "hello"
+                      , TagClose "span"
+                      , TagText " world"
+                      ]
+
 (~>) :: Text -> Parser a -> Either String a
 (~>) = (Test.Hspec.Attoparsec.Source.~>)

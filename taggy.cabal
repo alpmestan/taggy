@@ -54,7 +54,6 @@ library
                        Text.Taggy.Parser,
                        Text.Taggy.Renderer
                        Text.Taggy.Types
-  other-modules:
   build-depends:       base >=4.6 && <5,
                        blaze-html >= 0.7,
                        blaze-markup >= 0.6,
@@ -98,11 +97,17 @@ test-suite unit
   ghc-options:
       -Wall -fno-warn-unused-do-bind
   hs-source-dirs:
-      src, tests/unit
+      tests/unit
   main-is:
       Spec.hs
+  other-modules:
+      Text.Taggy.DOMSpec
+    , Text.Taggy.EntitiesSpec
+    , Text.Taggy.ParserSpec
+    , Text.Taggy.RendererSpec
   build-depends:
       base    == 4.*
+    , taggy
     , blaze-html
     , blaze-markup
     , text
@@ -120,11 +125,14 @@ test-suite integration
   ghc-options:
       -Wall -fno-warn-unused-do-bind
   hs-source-dirs:
-      src, tests/integration
+      tests/integration
   main-is:
       Main.hs
+  other-modules:
+      Paths_taggy
   build-depends:
       base    == 4.*
+    , taggy
     , blaze-html
     , blaze-markup
     , directory
@@ -134,7 +142,7 @@ test-suite integration
     , vector
     , attoparsec
     , unordered-containers
-  other-modules:
-    Paths_taggy
   default-language:
       Haskell2010
+
+-- vim:ts=2 sw=2
