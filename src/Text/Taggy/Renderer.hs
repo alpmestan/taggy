@@ -47,7 +47,6 @@ instance AsMarkup Element where
   toMarkup convertEntities Element{..} = eltAttrs `toAttribute` Parent tag begin end kids
     where tag   = toStatic eltName
           begin = toStatic $ "<" <> eltName
-          end   = toStatic $ "</" <> eltName <> ">"
           end   = case eltName of
                     "br" -> toStatic ""
                     _ -> toStatic $ "</" <> eltName <> ">"
