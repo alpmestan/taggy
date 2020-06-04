@@ -15,6 +15,8 @@ import Data.HashMap.Strict (HashMap, foldlWithKey')
 import Data.Monoid ((<>))
 import Data.Text (Text, unpack)
 import Data.Text.Encoding (encodeUtf8)
+import Data.Set as Set (member)
+import GHC.Exts
 import Text.Blaze (Markup)
 import Text.Blaze.Renderer.Text (renderMarkup)
 import Text.Taggy.DOM (Element(..), Node(..))
@@ -47,10 +49,15 @@ instance AsMarkup Element where
   toMarkup convertEntities Element{..} = eltAttrs `toAttribute` Parent tag begin end kids
     where tag   = toStatic eltName
           begin = toStatic $ "<" <> eltName
-          end   = case eltName of
-                    "br" -> toStatic ""
-                    _ -> toStatic $ "</" <> eltName <> ">"
+          end   = case voidElement eltName of
+                    True -> toStatic ""
+                    False -> toStatic $ "</" <> eltName <> ">"
           kids  = foldMap (toMarkup convertEntities) eltChildren
+
+voidElement :: (IsString s, Ord s) => s -> Bool
+voidElement e = Set.member e (fromList ["area", "base", "br", "col", "command", "embed", "hr",
+                                        "img", "input", "keygen", "link", "meta", "param",
+                                        "source", "track", "wbr"])
 
 class Renderable a where
   render :: a -> Lazy.Text
