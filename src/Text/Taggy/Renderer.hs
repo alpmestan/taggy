@@ -48,6 +48,9 @@ instance AsMarkup Element where
     where tag   = toStatic eltName
           begin = toStatic $ "<" <> eltName
           end   = toStatic $ "</" <> eltName <> ">"
+          end   = case eltName of
+                    "br" -> toStatic ""
+                    _ -> toStatic $ "</" <> eltName <> ">"
           kids  = foldMap (toMarkup convertEntities) eltChildren
 
 class Renderable a where
