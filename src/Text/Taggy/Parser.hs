@@ -18,6 +18,7 @@ module Text.Taggy.Parser
   , tagstyle
   , tagscript
   , tagtext
+  , tag
   , htmlWith
   ) where
 
