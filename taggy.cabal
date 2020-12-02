@@ -1,7 +1,7 @@
 name:                taggy
 version:             0.2.1
 synopsis:            Efficient and simple HTML/XML parsing library
-description:         
+description:
   /taggy/ is a simple package for parsing HTML (and should work with XML)
   written on top of the <http://hackage.haskell.org/package/attoparsec attoparsec>
   library, which makes it one of the most efficient (space and time consumption wise)
@@ -46,6 +46,7 @@ build-type:          Simple
 extra-source-files:  html_files/*.html
 data-files:          html_files/*.html
 cabal-version:       >=1.10
+tested-with:         GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.4, GHC == 8.6.3
 
 library
   exposed-modules:     Text.Taggy,
